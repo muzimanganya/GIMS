@@ -1,0 +1,41 @@
+<?php
+
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+
+/** @var yii\web\View $this */
+/** @var app\models\BillDetails $model */
+/** @var yii\widgets\ActiveForm $form */
+?>
+
+<div class="bill-details-form">
+
+    <?php $form = ActiveForm::begin(); ?>
+
+    <?= $form->field($model, 'unit_price')->textInput() ?>
+
+    <?= $form->field($model, 'quantity')->textInput() ?>
+
+    <?= $form->field($model, 'created_at')->textInput() ?>
+
+    <?= $form->field($model, 'updated_at')->textInput() ?>
+
+    <?= $form->field($model, 'created_by')->textInput() ?>
+
+    <?= $form->field($model, 'updated_by')->textInput() ?>
+
+    <?= $form->field($model, 'product')->textInput() ?>
+
+    <?= $form->field($model, 'tax')->textInput() ?>
+
+    <?= $form->field($model, 'ACCOUNT')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'bill_no')->textInput(['maxlength' => true]) ?>
+
+    <div class="form-group">
+        <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
+
+</div>

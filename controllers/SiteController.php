@@ -9,6 +9,8 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\DateRangeForm;
+
 
 class SiteController extends Controller
 {
@@ -18,19 +20,8 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -46,6 +37,7 @@ class SiteController extends Controller
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
+                'layout' => 'main-login'
             ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
@@ -59,11 +51,31 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
+	
 
+     public function actionIndex()
+     {
+         $model = new DateRangeForm();
+ 
+         if ($model->load(Yii::$app->request->get()) && $model->validate()) {
+             // Process the form data, for example, display the selected date range
+             Yii::$app->response->format = Response::FORMAT_JSON;
+             return [
+                 'start' => $model->start,
+                 'end' => $model->end,
+             ];
+         }
+ 
+         return $this->render('index', ['model' => $model]);
+     }
+    public function actionBusinessSetup()
+    {
+        return $this->render('business-setup');
+    }
+    public function actionDetails()
+    {
+        return $this->render('details');
+    }
     /**
      * Login action.
      *
@@ -71,6 +83,7 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        $this->layout = 'main-login';
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }

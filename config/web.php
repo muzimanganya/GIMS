@@ -1,20 +1,45 @@
 <?php
 
+use app\components\Formatter;
+use yii\filters\AccessControl;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
 $config = [
     'id' => 'basic',
+    'language' => 'en',
+    'bootstrap' => ['languagepicker'],
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    'modules' => [
+        'api' => [
+            'class' => 'app\modules\api\Module',
+        ],
+    ],
     'components' => [
+        'formatter' => [
+            'class' => Formatter::class
+        ],
+        'languagepicker' => [
+            'class' => 'lajax\languagepicker\Component',
+            // List of available languages (icons only)
+            'languages' => ['en' => 'English', 'fr' => 'Français'],
+            'callback' => function () {
+                if (!\Yii::$app->user->isGuest) {
+                    $user = \Yii::$app->user->identity;
+                    $user->lang = \Yii::$app->language;
+                    $user->save();
+                }
+            }
+        ],
         'request' => [
-            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'habdeskdkjkdj',
+            'enableCookieValidation' => false,
+            'enableCsrfValidation' => false,
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -27,9 +52,10 @@ $config = [
             'errorAction' => 'site/error',
         ],
         'mailer' => [
-            'class' => \yii\symfonymailer\Mailer::class,
-            'viewPath' => '@app/mail',
-            // send all mails to a file by default.
+            'class' => 'yii\swiftmailer\Mailer',
+            // send all mails to a file by default. You have to set
+            // 'useFileTransport' to false and configure a transport
+            // for the mailer to send real emails.
             'useFileTransport' => true,
         ],
         'log' => [
@@ -42,16 +68,43 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
+            'rules' => [],
+        ],
+        'i18n' => [
+            'translations' => [
+                'app*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/messages',
+                    'sourceLanguage' => 'en-US',
+                    'fileMap' => [
+                        'app' => 'app.php',
+                        'app/error' => 'error.php',
+                    ],
+                ],
             ],
         ],
-        */
     ],
+    'modules' => [
+        'gridview' => ['class' => 'kartik\grid\Module']
+   ] ,
     'params' => $params,
+    'as access' => [
+        'class' => AccessControl::class,
+        'except' => ['api/*', 'site/error', 'site/login'],
+        'rules' => [
+            [
+                'allow' => true,
+                'roles' => ['@'],
+            ]
+        ]
+    ],
+    'on beforeAction' => function ($event) {
+        $lang = Yii::$app->user->identity->lang ?? 'en';
+        Yii::$app->language = $lang;
+    }
 ];
 
 if (YII_ENV_DEV) {

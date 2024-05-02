@@ -1,0 +1,43 @@
+<?php
+
+use yii\helpers\Html;
+use yii\grid\GridView;
+
+/* @var $this yii\web\View */
+/* @var $searchModel app\modules\api\modules\v1\models\SearchEstmateDetails */
+/* @var $dataProvider yii\data\ActiveDataProvider */
+
+$this->title = Yii::t('app', 'Estmate Details');
+$this->params['breadcrumbs'][] = $this->title;
+?>
+<div class="estmate-details-index">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+
+    <p>
+        <?= Html::a(Yii::t('app', 'Create Estmate Details'), ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
+
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+
+            'quantity',
+            'price',
+            'created_at',
+            'updated_at',
+            'item',
+            //'estimate',
+            //'created_by',
+            //'updated_by',
+
+            ['class' => 'yii\grid\ActionColumn'],
+        ],
+    ]); ?>
+
+
+</div>
